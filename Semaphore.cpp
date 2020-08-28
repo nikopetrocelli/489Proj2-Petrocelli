@@ -1,5 +1,8 @@
 #include <pthread.h>
 #include "Semaphore.h"
+pthread_mutex_t mutex;
+pthread_cond_t condition;
+int sem = 0;
 
 
 /*************************************************************************************
@@ -11,7 +14,11 @@
  *************************************************************************************/
 
 Semaphore::Semaphore(int count) {
+   
+    sem = count;
 
+    pthread_mutex_init(&mutex,NULL);
+    
 }
 
 
@@ -22,6 +29,11 @@ Semaphore::Semaphore(int count) {
  *************************************************************************************/
 
 Semaphore::~Semaphore() {
+
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&condition);
+
+
 }
 
 
@@ -32,6 +44,13 @@ Semaphore::~Semaphore() {
 
 void Semaphore::wait() {
 
+    pthread_mutex_lock(&mutex);
+    while (sem <= 0){
+        pthread_cond_wait(&condition, &mutex);
+    }
+    sem--;
+    pthread_mutex_unlock(&mutex);
+
 }
 
 
@@ -41,6 +60,12 @@ void Semaphore::wait() {
  *************************************************************************************/
 
 void Semaphore::signal() {
+
+   pthread_mutex_lock(&mutex);
+   pthread_cond_signal(&condition);
+    sem++;
+   pthread_mutex_unlock(&mutex);
+    
 
 }
 
