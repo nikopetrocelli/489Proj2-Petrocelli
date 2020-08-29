@@ -118,7 +118,6 @@ void *consumer_routine(void *data) {
 		
 
 		//if (consumed<MAX_PROD){
-		
 		// Take an item off the shelf
 		pthread_mutex_lock(&buf_mutex);
 		
