@@ -122,7 +122,6 @@ void *consumer_routine(void *data) {
 		// Take an item off the shelf
 		pthread_mutex_lock(&buf_mutex);
 		
-			//current_id = out + 1;
 			current_item = buffer[out];
 			printf("   Consumer %d bought Yoda #%d.\n", *current_id, current_item);
 			
@@ -170,7 +169,6 @@ int main(int argv, const char *argc[]) {
 	int buff_size = (unsigned int) strtol(argc[1], NULL, 10);
 	MAX_BUFF = buff_size;
 	printf("The buffer size is: %d \n", MAX_BUFF);
-	//int buffer[MAX_BUFF];
 	buffer = new int[MAX_BUFF];
 
 
@@ -186,7 +184,6 @@ int main(int argv, const char *argc[]) {
 	
 	// Initialize our semaphores
 	empty = new Semaphore(0);
-	//ful = new Semaphore(1);
 	full = new Semaphore(MAX_BUFF);
 
 	pthread_mutex_init(&buf_mutex, NULL); // Initialize our buffer mutex
@@ -194,9 +191,9 @@ int main(int argv, const char *argc[]) {
 	pthread_t producer;
 	pthread_t consumer[num_consumers];
 
-	int cid_list[num_consumers];
+	int consumer_id[num_consumers];
 	for (int i = 0; i <num_consumers; i++){
-		cid_list[i] = i + 1;
+		consumer_id[i] = i + 1;
 	}
 
 
@@ -207,7 +204,7 @@ int main(int argv, const char *argc[]) {
 	for(int i = 0; i < num_consumers; i++){
 		//printf("counter of consumers is at %d \n", i);
 		//pthread_create(&consumer[i], NULL, consumer_routine, NULL);
-		pthread_create(&consumer[i], NULL, consumer_routine, &cid_list[i]);
+		pthread_create(&consumer[i], NULL, consumer_routine, &consumer_id[i]);
 	}
 	//pthread_create(&consumer, NULL, consumer_routine, NULL);
 
