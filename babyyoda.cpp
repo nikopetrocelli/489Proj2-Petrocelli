@@ -109,11 +109,15 @@ void *consumer_routine(void *data) {
 
 	bool quitthreads = false;
 
+	// if (consumed >= MAX_PROD){
+	// 	quitthreads = true;
+	// }
+
 	while (!quitthreads) {
 
 		printf("Consumer wants to buy a Yoda...\n");
 		//there are no yoda's so wait
-
+	
 		empty->wait();
 		
 

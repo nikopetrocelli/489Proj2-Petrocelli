@@ -2,7 +2,7 @@
 #include "Semaphore.h"
 pthread_mutex_t mutex;
 pthread_cond_t condition;
-int sem = 0;
+
 /***********************************************************************************
  * Niko Petrocelli
  * CSCE 489 Project 2

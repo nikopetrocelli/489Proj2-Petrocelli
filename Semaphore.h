@@ -13,6 +13,7 @@ public:
 	void signal();
 
 private:
+	int sem = 0;
 
 };
 
