@@ -183,6 +183,7 @@ int main(int argv, const char *argc[]) {
 	
 	// Initialize our semaphores
 	empty = new Semaphore(0);
+	//ful = new Semaphore(1);
 	full = new Semaphore(MAX_BUFF);
 
 	pthread_mutex_init(&buf_mutex, NULL); // Initialize our buffer mutex
