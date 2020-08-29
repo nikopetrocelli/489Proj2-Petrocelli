@@ -69,8 +69,9 @@ void Semaphore::wait() {
 void Semaphore::signal() {
 
    pthread_mutex_lock(&mutex);
+   sem++;
    pthread_cond_signal(&condition);
-    sem++;
+    
    pthread_mutex_unlock(&mutex);
     
 

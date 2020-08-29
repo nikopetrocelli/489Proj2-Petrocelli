@@ -24,7 +24,8 @@ Semaphore *full = NULL;
 
 pthread_mutex_t buf_mutex;
 
-int buffer[] = {};
+int* buffer;
+//int buffer = 0;
 int MAX_BUFF = 0;
 int consumed = 0;
 int count = 0;
@@ -62,10 +63,8 @@ void *producer_routine(void *data) {
 			// Semaphore check to make sure there is an available slot
 			
 
-			while (count == MAX_BUFF){
-					full->wait();
+			full->wait();
 					
-			}
 			// Place item on the next shelf slot by first setting the mutex to protect our buffer vars
 			pthread_mutex_lock(&buf_mutex);
 			buffer[in] = serialnum;
@@ -104,7 +103,9 @@ void *producer_routine(void *data) {
  *************************************************************************************/
 
 void *consumer_routine(void *data) {
-	(void) data;
+	//(void) data;
+	int* current_id = (int*) data;
+	int  current_item;
 
 	bool quitthreads = false;
 
@@ -112,20 +113,21 @@ void *consumer_routine(void *data) {
 
 		printf("Consumer wants to buy a Yoda...\n");
 		//there are no yoda's so wait
-		while( count == 0){
-			empty->wait();
-			
-		}
+
+		empty->wait();
+		
 
 		//if (consumed<MAX_PROD){
 		
 		// Take an item off the shelf
 		pthread_mutex_lock(&buf_mutex);
 		
-			printf("   Consumer bought Yoda #%d.\n", buffer[out]);
+			//current_id = out + 1;
+			current_item = buffer[out];
+			printf("   Consumer %d bought Yoda #%d.\n", *current_id, current_item);
 			
 			out = (out+1) % MAX_BUFF;
-			
+		
 		
 			count--;
 
@@ -168,7 +170,8 @@ int main(int argv, const char *argc[]) {
 	int buff_size = (unsigned int) strtol(argc[1], NULL, 10);
 	MAX_BUFF = buff_size;
 	printf("The buffer size is: %d \n", MAX_BUFF);
-	int buffer[MAX_BUFF];
+	//int buffer[MAX_BUFF];
+	buffer = new int[MAX_BUFF];
 
 
 	//User input on the number of consumers
@@ -191,13 +194,20 @@ int main(int argv, const char *argc[]) {
 	pthread_t producer;
 	pthread_t consumer[num_consumers];
 
+	int cid_list[num_consumers];
+	for (int i = 0; i <num_consumers; i++){
+		cid_list[i] = i + 1;
+	}
+
+
 	// Launch our producer thread
 	pthread_create(&producer, NULL, producer_routine, (void *) &num_produce);
 
 	// Launch our consumer threads, while less than number of consumers we spawn new consumer threads
 	for(int i = 0; i < num_consumers; i++){
 		//printf("counter of consumers is at %d \n", i);
-		pthread_create(&consumer[i], NULL, consumer_routine, NULL);
+		//pthread_create(&consumer[i], NULL, consumer_routine, NULL);
+		pthread_create(&consumer[i], NULL, consumer_routine, &cid_list[i]);
 	}
 	//pthread_create(&consumer, NULL, consumer_routine, NULL);
 
@@ -215,17 +225,16 @@ int main(int argv, const char *argc[]) {
 	// Now make sure they all exited
 	 for ( int i=0; i< num_consumers; i++) {
 	 	pthread_cancel(consumer[i]);
+		//pthread_join(consumer[i], NULL);
 	 }
 
 	// We are exiting, clean up
 	delete empty;
 	delete full;		
+	delete buffer;
 
 	printf("Producer/Consumer simulation complete!\n");
-	//Silence compiler warning
-	if(buffer[0]==0){
-		buffer[0]=0;
-	}
+
 	
 	
 
